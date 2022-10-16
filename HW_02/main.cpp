@@ -10,7 +10,7 @@ int main()
     T.insert_front("ASAKUSA");
     T.printList();
     Station *lastStation;
-    // lastStation= T.visit(7,"RRLRRRL");
-    // cout<<lastStation->name;
+    lastStation= T.visit(7,"RRLRRRL");
+    cout<<lastStation->name;
     return 0;
 }

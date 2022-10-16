@@ -35,42 +35,97 @@ public:
     }
   }
 
-  // void remove(int value) {
-  //  if (root == NULL)
-  //       return root;
-  //   if (value < root->value)
-  //       root->left = deleteNode(root->left, value);
-  //   else if (value > root->value)
-  //       root->right = deleteNode(root->right, value);
-  //   else {
-  //       if (root->left==NULL and root->right==NULL)
-  //           return NULL;
-  //       else if (root->left == NULL) {
-  //           struct node* temp = root->right;
-  //           free(root);
-  //           return temp;
-  //       }
-  //       else if (root->right == NULL) {
-  //           struct node* temp = root->left;
-  //           free(root);
-  //           return temp;
-  //       }
-  //       struct node* temp = minValueNode(root->right);
-  //       root->value = temp->value;
-  //       root->right = deleteNode(root->right, temp->value);
-  //   }
-  // }
+  void remove(int value) {
+    int i = 0;
+    bool pointing, moving;
+    BSTNode *p, *previous, *x, *y = new BSTNode;
+    p = root;
 
-  // int get_depth(int value) {
-  //   if (root == NULL)
-  //   return 0;
+    if (p == nullptr) {
+      return;
+    }
 
-  //   int leftDepth = maxDepth(root->left);
-  //   int rightDepth = maxDepth(root->right);
-  //   if (leftDepth > rightDepth)
-  //     return leftDepth + 1;
-  //   else
-  //     return rightDepth + 1;
-  //   //return -1;
-  // }
+    while (p -> value != value) {
+
+      if (p == nullptr) {
+        return;
+      }
+      i ++;
+      previous = p;
+
+      if (p -> value > value) {
+        p = p -> left;
+        pointing = true;
+      }else {
+        p = p -> right;
+        pointing = false;
+      }
+    }
+
+    // NO CHILD !!!!!!
+
+    if (p -> left == nullptr && p -> right == nullptr) {
+      if (pointing == true) {
+        previous -> left = nullptr;
+      }else {
+        previous -> right = nullptr;
+      }
+      free_node(x);
+    }
+
+    // HAVE 2 CHILD !!!!!!!
+
+    else if ((p -> left != nullptr && p -> right == nullptr) || (p -> left == nullptr &&  p -> right != nullptr)) {
+
+      if (p -> left != nullptr) {
+        if (pointing == true) {
+          x = previous -> left;
+          previous -> left = x -> left;  
+        }else {
+          x = previous -> right;
+          previous -> right = x -> right;
+        }
+        free_node(x);
+      }else {
+        if (pointing == true) {
+          previous -> left = x -> right;
+        }
+      }
+    }
+
+  }
+  int get_depth(int value) {
+    BSTNode *newnode = new BSTNode();
+    newnode->value = value;
+    newnode->left = nullptr;
+    newnode->right = nullptr;
+    BSTNode *p;
+    
+    int dist = 0;
+    if (root == nullptr) {
+      return dist ;
+    }else {
+      p = root;
+      while (p -> value != value && p != nullptr) {
+        if (p->value > value) {
+          p = p -> left; 
+        } else {
+          p = p -> right;
+        } dist += 1;
+      }
+    }
+
+    if (p == nullptr) {
+      return dist;
+    }else {
+      return -1;
+    }    
+  }
+
+ void free_node(BSTNode *x){
+
+  x -> left = nullptr;
+  x -> right = nullptr;
+  delete x;
+ } 
 };

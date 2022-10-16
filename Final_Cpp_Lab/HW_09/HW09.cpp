@@ -27,9 +27,7 @@ public:
   HuffmanTree() { root = nullptr; }
 
   void buildTree(Frequency *freq) {
-    /*
-Write your code here
-*/
+    
   }
 
   void decode(string code) {
