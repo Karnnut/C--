@@ -1,131 +1,199 @@
 #include "BSTNode.cpp"
-class BST {
+#include <iostream>
+using namespace std;
+class BST
+{
 
 public:
-  BSTNode *root;
+    BSTNode *root;
 
-  BST() { root = nullptr; }
+    BST()
+    {
+        root = nullptr;
+    }
 
-  void insert(int value) {
-    BSTNode *newnode = new BSTNode();
-    newnode->value = value;
-    newnode->left = nullptr;
-    newnode->right = nullptr;
+    void insert(int value)
+    {
+        // cout<<"in"<<endl;
+        BSTNode *p, *previous, *new_node = new BSTNode;
+        new_node->value = value;
+        new_node->left = nullptr;
+        new_node->right = nullptr;
 
-    BSTNode *p, *previous;
-
-    if (root == nullptr) {
-      root = newnode;
-    } else {
-      p = root;
-      while (p != nullptr) {
-        previous = p;
-        if (p->value > newnode->value) {
-          p = p->left;
-        } else {
-          p = p->right;
+        if (root == nullptr)
+        {
+            root = new_node;
         }
-      }
-    }
-
-    if (previous -> value > newnode -> value) {
-      previous -> left = newnode;
-    }else {
-      previous -> right = newnode;
-    }
-  }
-
-  void remove(int value) {
-    int i = 0;
-    bool pointing, moving;
-    BSTNode *p, *previous, *x, *y = new BSTNode;
-    p = root;
-
-    if (p == nullptr) {
-      return;
-    }
-
-    while (p -> value != value) {
-
-      if (p == nullptr) {
-        return;
-      }
-      i ++;
-      previous = p;
-
-      if (p -> value > value) {
-        p = p -> left;
-        pointing = true;
-      }else {
-        p = p -> right;
-        pointing = false;
-      }
-    }
-
-    // NO CHILD !!!!!!
-
-    if (p -> left == nullptr && p -> right == nullptr) {
-      if (pointing == true) {
-        previous -> left = nullptr;
-      }else {
-        previous -> right = nullptr;
-      }
-      free_node(x);
-    }
-
-    // HAVE 2 CHILD !!!!!!!
-
-    else if ((p -> left != nullptr && p -> right == nullptr) || (p -> left == nullptr &&  p -> right != nullptr)) {
-
-      if (p -> left != nullptr) {
-        if (pointing == true) {
-          x = previous -> left;
-          previous -> left = x -> left;  
-        }else {
-          x = previous -> right;
-          previous -> right = x -> right;
+        else
+        {
+            p = root;
+            while (p != nullptr)
+            {
+                previous = p;
+                if (p->value > new_node->value)
+                {
+                    p = p->left;
+                }
+                else
+                {
+                    p = p->right;
+                }
+            }
+            if (previous->value > new_node->value)
+            {
+                previous->left = new_node;
+            }
+            else
+            {
+                previous->right = new_node;
+            }
         }
-        free_node(x);
-      }else {
-        if (pointing == true) {
-          previous -> left = x -> right;
+    }
+
+    void remove(int value)
+    {
+        // int i =0;
+        BSTNode *p = root;
+        BSTNode *previous = nullptr;
+
+        while (p != nullptr && p->value != value)
+        {
+
+            previous = p;
+            if (p->value > value)
+            {
+                p = p->left;
+            }
+            else
+            {
+                p = p->right;
+            }
         }
-      }
+        // tree empty
+        if (p == nullptr)
+        {
+            return;
+        } 
+        // leaf child
+        if (isLeaf(p)) 
+        {
+            if (p != root)
+            {
+                if (p->left == p)
+                {
+                    previous->left = nullptr;
+                }
+                else
+                {
+                    previous->right = nullptr;
+                }
+            }
+            else
+            {
+                root = nullptr;
+            }
+
+            free(p);
+        }
+        // two child
+        else if (p->left && p->right)
+        {
+            BSTNode *l_most = leftMost(p->right);
+            int v_lmost = l_most->value;
+            remove(v_lmost);
+            p->value = v_lmost;
+        }
+        else
+        {
+            if (p != root)
+            {
+                if (p == previous->left)
+                {
+                    previous->left = oneChild(p);
+                }
+                else
+                {
+                    previous->right = oneChild(p);
+                }
+            }
+            else
+            {
+                root = oneChild(p);
+            }
+            free(p);
+        }
     }
 
-  }
-  int get_depth(int value) {
-    BSTNode *newnode = new BSTNode();
-    newnode->value = value;
-    newnode->left = nullptr;
-    newnode->right = nullptr;
-    BSTNode *p;
-    
-    int dist = 0;
-    if (root == nullptr) {
-      return dist ;
-    }else {
-      p = root;
-      while (p -> value != value && p != nullptr) {
-        if (p->value > value) {
-          p = p -> left; 
-        } else {
-          p = p -> right;
-        } dist += 1;
-      }
+    int get_depth(int value)
+    {
+        // cout<<"value : "<<value<<endl;
+        int depth = 0;
+        BSTNode *p;
+
+        if (root == NULL)
+        {
+            return 0;
+        }
+
+        p = root;
+        // cout<<p->value<<endl;
+        while (p != nullptr)
+        {
+            if (p->value != value)
+            {
+                if (p->value > value)
+                {
+                    p = p->left;
+                }
+                else
+                {
+                    p = p->right;
+                }
+                depth++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (p != nullptr)
+        {
+            return depth;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
-    if (p == nullptr) {
-      return dist;
-    }else {
-      return -1;
-    }    
-  }
+    void free(BSTNode *x)
+    {
+        // cout << "free node" << endl;
+        delete x;
+    }
+    bool isLeaf(BSTNode *p)
+    {
+        return (p->left != nullptr && p->right == nullptr);
+    }
 
- void free_node(BSTNode *x){
+    BSTNode *oneChild(BSTNode *p)
+    {
+        if (p->left != nullptr && p->right == nullptr)
+        {
+            return p->left;
+        }
+        else if (p->left == nullptr && p->right != nullptr)
+        {
+            return p->right;
+        }
+    }
 
-  x -> left = nullptr;
-  x -> right = nullptr;
-  delete x;
- } 
+    BSTNode *leftMost(BSTNode *p)
+    {
+        while (p->left != nullptr)
+        {
+            p = p->left;
+        }
+        return p;
+    }
 };

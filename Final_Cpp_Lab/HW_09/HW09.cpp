@@ -28,6 +28,7 @@ public:
 
   void buildTree(Frequency *freq) {
     
+    
   }
 
   void decode(string code) {
