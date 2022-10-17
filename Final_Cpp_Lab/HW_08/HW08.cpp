@@ -50,83 +50,8 @@ public:
         }
     }
 
-    void remove(int value)
-    {
-        // int i =0;
-        BSTNode *p = root;
-        BSTNode *previous = nullptr;
-
-        while (p != nullptr && p->value != value)
-        {
-
-            previous = p;
-            if (p->value > value)
-            {
-                p = p->left;
-            }
-            else
-            {
-                p = p->right;
-            }
-        }
-        // tree empty
-        if (p == nullptr)
-        {
-            return;
-        } 
-        // leaf child
-        if (isLeaf(p)) 
-        {
-            if (p != root)
-            {
-                if (p->left == p)
-                {
-                    previous->left = nullptr;
-                }
-                else
-                {
-                    previous->right = nullptr;
-                }
-            }
-            else
-            {
-                root = nullptr;
-            }
-
-            free(p);
-        }
-        // two child
-        else if (p->left && p->right)
-        {
-            BSTNode *l_most = leftMost(p->right);
-            int v_lmost = l_most->value;
-            remove(v_lmost);
-            p->value = v_lmost;
-        }
-        else
-        {
-            if (p != root)
-            {
-                if (p == previous->left)
-                {
-                    previous->left = oneChild(p);
-                }
-                else
-                {
-                    previous->right = oneChild(p);
-                }
-            }
-            else
-            {
-                root = oneChild(p);
-            }
-            free(p);
-        }
-    }
-
     int get_depth(int value)
     {
-        // cout<<"value : "<<value<<endl;
         int depth = 0;
         BSTNode *p;
 
@@ -136,7 +61,6 @@ public:
         }
 
         p = root;
-        // cout<<p->value<<endl;
         while (p != nullptr)
         {
             if (p->value != value)
@@ -165,35 +89,63 @@ public:
             return -1;
         }
     }
-
-    void free(BSTNode *x)
-    {
-        // cout << "free node" << endl;
-        delete x;
-    }
-    bool isLeaf(BSTNode *p)
-    {
-        return (p->left != nullptr && p->right == nullptr);
-    }
-
-    BSTNode *oneChild(BSTNode *p)
-    {
-        if (p->left != nullptr && p->right == nullptr)
-        {
-            return p->left;
+    void delete_element(BSTNode *a, BSTNode *before, int value) {
+        if (a != nullptr) {
+            if (value < a->value) {
+                before = a;
+                delete_element(a->left, before, value);
+            } else if (value > a->value) {
+                before = a;
+                delete_element(a->right, before, value);
+            } else {
+                if (a->left == nullptr && a->right == nullptr) {
+                if (before->value == a->value) {
+                    root = nullptr;
+            
+                } else if (before->left->value == a->value){
+                    before->left = nullptr;
+                } else {
+                    before->right = nullptr;
+                }
+                } else if (a->left == nullptr) {
+                // cout << "child on right";
+                if (before->value == a->value) {
+                    root = a->right;
+                } else if (before->left->value == a->value) {
+                    before->left = a->right;
+                } else {
+                    before->right = a->right;
+                }
+                } else if (a->right == nullptr) {
+                if (before->value == a->value) {
+                    root = a->left;
+                } else if (before->left->value == a->value) {
+                    before->left = a->left;
+                } else {
+                    before->right = a->left;
+                }
+                } else {
+                BSTNode *Curr = new BSTNode;
+                Curr = MinNode(a->right);
+                int num = Curr->value;
+                delete_element(root, root, Curr->value);
+                if (before->value == a->value) {
+                    before->value = num;
+                } else if (before->left->value == a->value) {
+                    before->left->value = num;
+                } else {
+                    before->right->value = num;
+                }
+                }
+            }
         }
-        else if (p->left == nullptr && p->right != nullptr)
-        {
-            return p->right;
-        }
     }
+  void remove(int value) { delete_element(root, root, value); }
+  BSTNode *MinNode(BSTNode *a) {
 
-    BSTNode *leftMost(BSTNode *p)
-    {
-        while (p->left != nullptr)
-        {
-            p = p->left;
-        }
-        return p;
-    }
+    while (a != nullptr && a->left != nullptr)
+      a = a->left;
+
+    return a;
+  }
 };
